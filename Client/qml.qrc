@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Login.qml</file>
+        <file>images/back.png</file>
+        <file>ItemTree.qml</file>
+        <file>MainPage.qml</file>
+        <file>images/maintenance.png</file>
+        <file>images/Analysis.png</file>
+        <file>images/operations.png</file>
+        <file>images/House.png</file>
+        <file>images/personnel.png</file>
+        <file>images/Home.png</file>
+        <file>images/management.png</file>
+        <file>Register.qml</file>
+        <file>images/backgroud.jpg</file>
+        <file>Register_Success.qml</file>
+        <file>Register_Failure.qml</file>
+        <file>images/Header_2.png</file>
+        <file>images/profile_1.jpg</file>
+        <file>images/collapse.png</file>
+        <file>images/expansion.png</file>
+        <file>Building_Management.qml</file>
+        <file>DataTableView.qml</file>
+        <file>System_User.qml</file>
+        <file>Home_Page.qml</file>
+    </qresource>
+</RCC>
