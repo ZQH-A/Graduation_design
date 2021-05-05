@@ -249,6 +249,21 @@ ApplicationWindow{
                 visible:false
             }
 
+            Connections{
+                target: worker
+                onRegister_stateChanged:
+                {
+                    if(worker.register_state)
+                    {
+                        console.log("注册成功")
+                        register_success.show()
+                    }else
+                    {
+                        register_failure.show()
+                        console.log("该账户已被注册")
+                    }
+                }
+            }
             Button{
                 id:register_button
                 width:230
@@ -263,16 +278,7 @@ ApplicationWindow{
                 text:"立即注册"
 
                 onClicked: {
-                    if(dataEncapsulation.insert_manger(count_text.text,password_text.text,username_text.text,tel_text.text))
-                    {//注册成功 弹出注册成功页面
-                        console.log("注册成功")
-                        register_success.show()
-
-                    }else
-                    {//注册失败 弹出注册失败页面
-                        register_failure.show()
-                        console.log("该账户已被注册")
-                    }
+                    worker.manger_register(count_text.text,password_text.text,username_text.text,tel_text.text);
                 }
             }
         }

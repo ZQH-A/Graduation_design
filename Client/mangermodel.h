@@ -13,7 +13,8 @@ public:
         ACCOUNT = Qt::UserRole+1,
         PASSWORD,
         NAME,
-        TEL
+        TEL,
+        SEX
     };
 
     void addManger(const Manger &m);

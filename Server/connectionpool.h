@@ -2,7 +2,7 @@
 #define CONNECTIONPOOL_H
 
 //数据库连接池
-#include<QDebug>
+#include <QDebug>
 #include <QQueue>
 #include <QString>
 #include <QMutex>

@@ -6,13 +6,13 @@ import QtGraphicalEffects 1.0
 
 ApplicationWindow{
     visible:true
-    width:1560
+    width:1600
     height:850
     title:qsTr("房屋出租管理系统")
 
     Rectangle{
         anchors.fill:parent
-        color:"black"
+//        color:"black"
 
         Rectangle{
             id:header_mainPage
@@ -122,6 +122,12 @@ ApplicationWindow{
             System_User{
 
             }
+            Tenants{
+
+            }
+            Owner{
+
+            }
 
             Rectangle{
                 color:"green"
@@ -137,7 +143,7 @@ ApplicationWindow{
             anchors.left:parent.left
             anchors.top: parent.top
             anchors.topMargin: 50
-            width:240
+            width:200
             height:parent.height-50
             color: "black"
 

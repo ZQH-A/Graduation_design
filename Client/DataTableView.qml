@@ -74,6 +74,8 @@ ListView {
             property var myModel: model
             property var modelColumnsList: listView.model.isSqlModel?listView.model.getHeaderList():Object.keys(listView.model.get(0)).reverse()
             Row{
+                id:content_row
+                width: contentWidth
                 Repeater{
                     id:delegateRepeater
                     model:headerList
@@ -95,9 +97,11 @@ ListView {
                         }
                     }
                 }
+
             }
         }
     }
+
     delegate:listDelegate
 
 

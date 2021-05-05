@@ -24,5 +24,30 @@
         <file>DataTableView.qml</file>
         <file>System_User.qml</file>
         <file>Home_Page.qml</file>
+        <file>Tenants.qml</file>
+        <file>Current_Tenants.qml</file>
+        <file>images/up_and_down_1.png</file>
+        <file>DataTable_Button.qml</file>
+        <file>Add_Tennants.qml</file>
+        <file>images/add_tennant.png</file>
+        <file>images/more.png</file>
+        <file>images/print.png</file>
+        <file>images/search.png</file>
+        <file>images/export.png</file>
+        <file>images/first.png</file>
+        <file>images/line.png</file>
+        <file>images/second.png</file>
+        <file>images/line_1.png</file>
+        <file>images/add_image.png</file>
+        <file>Detail.qml</file>
+        <file>images/closeback.png</file>
+        <file>images/back_1.png</file>
+        <file>images/back_2.png</file>
+        <file>Owner.qml</file>
+        <file>images/detail.png</file>
+        <file>images/personel_1.png</file>
+        <file>images/up_and_down.png</file>
+        <file>RepeaterMenu.qml</file>
+        <file>images/house_logo.png</file>
     </qresource>
 </RCC>

@@ -20,7 +20,15 @@ SOURCES += main.cpp \
     simpletcpsocketclient.cpp \
     dataencapsulation.cpp \
     manger.cpp \
-    mangermodel.cpp
+    mangermodel.cpp \
+    workermanager.cpp \
+    baseworker.cpp \
+    tennant.cpp \
+    tennantmodel.cpp \
+    owner.cpp \
+    ownermodel.cpp \
+    real_estate.cpp \
+    real_estatemodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -42,4 +50,14 @@ HEADERS += \
     simpletcpsocketclient.h \
     dataencapsulation.h \
     manger.h \
-    mangermodel.h
+    mangermodel.h \
+    workermanager.h \
+    baseworker.h \
+    tennant.h \
+    tennantmodel.h \
+    owner.h \
+    ownermodel.h \
+    real_estate.h \
+    real_estatemodel.h
+
+DISTFILES +=

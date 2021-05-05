@@ -1,11 +1,17 @@
 #include "manger.h"
 
-Manger::Manger(const QString &account,const QString &password,const QString &name, const QString &tel)
+Manger::Manger(const QString &account,const QString &password,const QString &name, const QString &tel,const QString &sex)
 {
     m_account = account;
     m_password = password;
     m_name = name;
     m_tel = tel;
+    m_sex = sex;
+}
+
+Manger::Manger()
+{
+
 }
 
 QString Manger::account() const
@@ -30,5 +36,10 @@ QString Manger::tel() const
 
 int Manger::number() const
 {
-    return 4;
+    return 5;
+}
+
+QString Manger::sex() const
+{
+    return m_sex;
 }

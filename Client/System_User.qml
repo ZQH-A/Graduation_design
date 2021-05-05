@@ -189,6 +189,9 @@ Item {
                 text:"查询"
                 width: 160
                 height: 35
+                onClicked: {  //管理员查询
+                    worker.showMangers(user_account_text.text,user_name_text.text,user_tel_text.text);
+                }
             }
         }
         Rectangle{
@@ -205,172 +208,173 @@ Item {
             anchors.left: parent.left
             anchors.top: line_2.bottom
             anchors.topMargin: 5
-            headerList: ["账号","密码","姓名","联系电话"]//不自己设置时，表头使用model数据列名
+            headerList: ["账号","密码","姓名","联系电话","性别"]//不自己设置时，表头使用model数据列名
             width: columnsWidth*mModel.number()
             columnsWidth:parent.width/(mModel.number()+1)
             anchors.bottom: parent.bottom
             model:mModel
         }
 
-        Rectangle{
-            id:operation
-            anchors.left: table_user.right
-            anchors.top: line_2.bottom
-            anchors.topMargin: 5
-            anchors.right: parent.right
-            height: table_user.height
+//        Rectangle{
+//            id:operation
+//            anchors.left: table_user.right
+//            anchors.top: line_2.bottom
+//            anchors.topMargin: 5
+//            anchors.right: parent.right
+//            height: table_user.height
 
-            Rectangle{
-                id:operation_name
-                anchors.left: parent.left
-                width: parent.width
-                height:50
-                color: "#044599"
-                Label{
-                    text:"操作"
-                    anchors.centerIn: parent
-                    font.pointSize:13
-                    color: "white"
-                }
-                border.color: "gray"
-                border.width: 1
-            }
+//            Rectangle{
+//                id:operation_name
+//                anchors.left: parent.left
+//                width: parent.width
+//                height:50
+//                color: "#044599"
+//                Label{
+//                    text:"操作"
+//                    anchors.centerIn: parent
+//                    font.pointSize:13
+//                    color: "white"
+//                }
+//                border.color: "gray"
+//                border.width: 1
+//            }
 
-            Rectangle{
-                id:operation_1
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_name.bottom
-                height:48
-                Button{
-                    id:operation_1_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-                border.color: "gray"
-                border.width: 1
-            }
-            Rectangle{
-                id:operation_2
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_1.bottom
-                height:48
-                Button{
-                    id:operation_2_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-                border.color: "gray"
-                border.width: 1
-            }
-            Rectangle{
-                id:operation_3
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_2.bottom
-                height:48
-                border.color: "gray"
-                border.width: 1
-                Button{
-                    id:operation_3_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-            }
-            Rectangle{
-                id:operation_4
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_3.bottom
-                height:48
-                border.color: "gray"
-                border.width: 1
-                Button{
-                    id:operation_4_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-            }
-            Rectangle{
-                id:operation_5
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_4.bottom
-                height:48
-                border.color: "gray"
-                border.width: 1
-                Button{
-                    id:operation_5_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-            }
-            Rectangle{
-                id:operation_6
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_5.bottom
-                height:48
-                border.color: "gray"
-                border.width: 1
-                Button{
-                    id:operation_6_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-            }
-            Rectangle{
-                id:operation_7
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_6.bottom
-                height:48
-                border.color: "gray"
-                border.width: 1
-                Button{
-                    id:operation_7_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-            }
-            Rectangle{
-                id:operation_8
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_7.bottom
-                height:48
-                border.color: "gray"
-                border.width: 1
-                Button{
-                    id:operation_8_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-            }
-            Rectangle{
-                id:operation_9
-                anchors.left: parent.left
-                width: parent.width
-                anchors.top: operation_8.bottom
-                height:48
-                border.color: "gray"
-                border.width: 1
-                Button{
-                    id:operation_9_button
-                    anchors.centerIn: parent
-                    width: 100
-                    text:"编辑"
-                }
-            }
-        }
+//            Rectangle{
+//                id:operation_1
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_name.bottom
+//                height:48
+//                Button{
+//                    id:operation_1_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//                border.color: "gray"
+//                border.width: 1
+//            }
+//            Rectangle{
+//                id:operation_2
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_1.bottom
+//                height:48
+//                Button{
+//                    id:operation_2_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//                border.color: "gray"
+//                border.width: 1
+//            }
+//            Rectangle{
+//                id:operation_3
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_2.bottom
+//                height:48
+//                border.color: "gray"
+//                border.width: 1
+//                Button{
+//                    id:operation_3_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//            }
+//            Rectangle{
+//                id:operation_4
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_3.bottom
+//                height:48
+//                border.color: "gray"
+//                border.width: 1
+//                Button{
+//                    id:operation_4_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//            }
+//            Rectangle{
+//                id:operation_5
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_4.bottom
+//                height:48
+//                border.color: "gray"
+//                border.width: 1
+//                Button{
+//                    id:operation_5_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//            }
+//            Rectangle{
+//                id:operation_6
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_5.bottom
+//                height:48
+//                border.color: "gray"
+//                border.width: 1
+//                Button{
+//                    id:operation_6_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//            }
+//            Rectangle{
+//                id:operation_7
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_6.bottom
+//                height:48
+//                border.color: "gray"
+//                border.width: 1
+//                Button{
+//                    id:operation_7_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//            }
+//            Rectangle{
+//                id:operation_8
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_7.bottom
+//                height:48
+//                border.color: "gray"
+//                border.width: 1
+//                Button{
+//                    id:operation_8_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//            }
+//            Rectangle{
+//                id:operation_9
+//                anchors.left: parent.left
+//                width: parent.width
+//                anchors.top: operation_8.bottom
+//                height:48
+//                border.color: "gray"
+//                border.width: 1
+//                Button{
+//                    id:operation_9_button
+//                    anchors.centerIn: parent
+//                    width: 100
+//                    text:"编辑"
+//                }
+//            }
+//        }
+
     }
 }

@@ -3,12 +3,11 @@
 DataEncapsulation::DataEncapsulation()//打开数据库并创建一些基本表
 {
     tcpSocketClient = new SimpleTcpSocketClient();
-    tcpSocketClient->Connect();
 }
 
-void DataEncapsulation::push_back_manger(MangerModel *model)
+void DataEncapsulation::connect()
 {
-    m_manger_model = model;
+    tcpSocketClient->Connect();
 }
 
 void DataEncapsulation::disconnect()
@@ -26,27 +25,32 @@ bool DataEncapsulation::login_manger(QString account, QString password)
     return tcpSocketClient->login(account,password);
 }
 
-void DataEncapsulation::first_select_house()
+QList<Manger> DataEncapsulation::display_user_infor(QString account,QString name,QString tel,QString sex)
 {
-
+    QList<Manger> manger = tcpSocketClient->receive_Manger_info(account,name,tel,sex);
+    return manger;
 }
 
-void DataEncapsulation::first_select_System_User()
+QList<Tennant> DataEncapsulation::display_tennant_info(QString search)
 {
-
+    QList<Tennant> tenants = tcpSocketClient->receive_Tennant_info(search);
+    return tenants;
 }
 
-void DataEncapsulation::display_user_infor()
+QList<Owner> DataEncapsulation::display_owner_info()
 {
-    QList<Manger> manger = tcpSocketClient->receive_Manger_info();
-    qDebug() << manger.size();
-    for(int i=0;i<manger.size();i++)
-    {
-        m_manger_model->addManger(manger[i]);
-    }
-//    m_manger_model->addManger(Manger("1","1","1","1"));
-//    m_manger_model->addManger(Manger("2","1","1","1"));
-//    m_manger_model->addManger(Manger("3","1","1","1"));
-//    m_manger_model->addManger(Manger("4","1","1","1"));
+    QList<Owner> owner = tcpSocketClient->receive_Owner_info();
+    return owner;
+}
+
+QList<Real_estate> DataEncapsulation::display_real_estate_info()
+{
+    QList<Real_estate> real_estate = tcpSocketClient->receive_Real_estate_info();
+    return real_estate;
+}
+
+bool DataEncapsulation::add_tennants(QString Real_estate, QString House_id, QString name, QString tel, QString ID_number, QString begin, QString end,QString cycle, int month_rent, int deposit)
+{
+    return tcpSocketClient->add_tennants(Real_estate,House_id,name,tel,ID_number,begin,end,cycle,month_rent,deposit);
 }
 

@@ -37,6 +37,9 @@ QVariant MangerModel::data(const QModelIndex &index, int role) const
     }else if(role == TEL)
     {
         return m.tel();
+    }else if(role == SEX)
+    {
+        return m.sex();
     }
     return QVariant();
 }
@@ -48,6 +51,7 @@ QVariantList MangerModel::getHeaderList()
     list.append("密码");
     list.append("姓名");
     list.append("电话号码");
+    list.append("性别");
     return list;
 }
 
@@ -72,5 +76,6 @@ QHash<int, QByteArray> MangerModel::roleNames() const
     roles[PASSWORD] = "密码";
     roles[NAME] = "姓名";
     roles[TEL] = "电话号码";
+    roles[SEX] = "性别";
     return roles;
 }

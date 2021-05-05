@@ -20,15 +20,16 @@ ApplicationWindow{
     Rectangle{//加载顶部背景图片
         id:top_image
         height:103
-        anchors.left: parent.left
+        width: parent.width
+
+//        anchors.left: parent.left
         anchors.top:parent.top
-        anchors.leftMargin: 20
+//        anchors.leftMargin: 20
         anchors.topMargin: 20
         Image{
             id:picture_back
-            source: "qrc:images/back.png"
-            x:0
-            y:0
+            source: "qrc:images/back_2.png"
+            anchors.centerIn: parent
         }
     }
 
@@ -139,19 +140,27 @@ ApplicationWindow{
         anchors.top: rect_count_pass.bottom
         anchors.topMargin: 10
 
+        Connections{
+            target: worker
+            onLogin_stateChanged:{
+
+                if(worker.login_state)
+                {                   
+                    login.close();
+                    pageLoader_.source="MainPage.qml";
+                }else
+                {
+                    console.log("请重新输入，账户或密码错误")
+                }
+            }
+        }
 
         Button{
             id:login_button
             height:30
             text:"登录"
             onClicked: {
-                if(dataEncapsulation.login_manger(count_text.text,password_text.text))
-                {
-                    login.close()
-                    pageLoader_.source="MainPage.qml"
-                }else{
-                    console.log("请重新输入，账户或密码错误")
-                }
+                worker.manger_login(count_text.text,password_text.text);
             }
         }
         Button{

@@ -35,8 +35,8 @@ bool SimpleTcpSocketClient::login(QString account, QString password)
     QJsonDocument document;
     document.setObject(json);
     QByteArray byteArray = document.toJson(QJsonDocument::Compact);
-    qDebug() <<QString(byteArray);
-    qDebug() << byteArray.size();
+//    qDebug() <<QString(byteArray);
+//    qDebug() << byteArray.size();
 
     sendHeader(0,byteArray.size());// 发送操作和将要发送数据的大小
     m_pTcpSocket->write(byteArray); //发送账号密码
@@ -46,7 +46,7 @@ bool SimpleTcpSocketClient::login(QString account, QString password)
     m_pTcpSocket->waitForReadyRead();
     QByteArray message = m_pTcpSocket->read(m_len);
     QString login_state = QString(message);
-    qDebug() << login_state;
+//    qDebug() << login_state;
     if(login_state == "success")
     {
         return true;
@@ -76,6 +76,21 @@ void SimpleTcpSocketClient::sendHeader(int type,int length)
     }else if(type == -1)
     {
         header = QString::number(DISCONNECT);
+    }else if(type == 2)
+    {
+        header = QString::number(RECE_USER_INFO);
+    }else if(type == 3)
+    {
+        header = QString::number(ADD_TENNANTS);
+    }else if(type ==4)
+    {
+        header = QString::number(RECE_TENNANT_INFO);
+    }else if(type == 5)
+    {
+        header = QString::number(RECE_OWNER_INFO);
+    }else if(type == 6)
+    {
+        header = QString::number(RECE_REAL_ESTATE_INFO);
     }
     m_header.fill('0',10);
     m_header.push_back(header);
@@ -107,6 +122,18 @@ void SimpleTcpSocketClient::ReceiveHeader()
     }else if(symbol == RECE_USER_INFO)
     {
         m_type =2;
+    }else if(symbol == ADD_TENNANTS)
+    {
+        m_type =3;
+    }else if(symbol == RECE_TENNANT_INFO)
+    {
+        m_type =4;
+    }else if(symbol == RECE_OWNER_INFO)
+    {
+        m_type =5;
+    }else if(symbol == RECE_REAL_ESTATE_INFO)
+    {
+        m_type =6;
     }
     m_len = length;
     qDebug()<< m_type<< "     "<<length;
@@ -139,9 +166,9 @@ bool SimpleTcpSocketClient::insert_manger(QString account, QString password, QSt
 
     //接收服务器的回应
     ReceiveHeader();
-    while(!m_pTcpSocket->waitForReadyRead())
-    {
-    }
+    m_pTcpSocket->waitForReadyRead();
+
+
     QByteArray message = m_pTcpSocket->read(m_len);
     QString register_state = QString(message);
     if(register_state == "success")
@@ -151,20 +178,118 @@ bool SimpleTcpSocketClient::insert_manger(QString account, QString password, QSt
     return false;
 }
 
-QList<Manger > SimpleTcpSocketClient::receive_Manger_info()
+QList<Manger > SimpleTcpSocketClient::receive_Manger_info(QString account,QString name,QString tel,QString sex)
 {
+    QJsonObject json;
+    json.insert("ACCOUNT",account);
+    json.insert("NAME",name);
+    json.insert("TEL",tel);
+    json.insert("SEX",sex);
+
+    QJsonDocument document_;
+    document_.setObject(json);
+    QByteArray byteArray = document_.toJson(QJsonDocument::Compact);
+
+    sendHeader(2,byteArray.size());
+    m_pTcpSocket->write(byteArray); //将需要筛选条件发送到服务器
+
     QList<Manger > manger;
 
     //接收服务器的回应
     ReceiveHeader();
     m_pTcpSocket->waitForReadyRead();
-//    while(!m_pTcpSocket->waitForReadyRead())
-//    {
-//        qDebug()<<"wait data....";
-//    }
+
+    QByteArray message = m_pTcpSocket->read(m_len);
+    //解析json格式
+    QJsonParseError jsonError;
+    QJsonDocument document = QJsonDocument::fromJson(message, &jsonError);//转化为json 文档
+    if(!document.isNull() && (jsonError.error == QJsonParseError::NoError))//解析未发生错误
+    {
+        if(document.isObject()) //json 文档为对象
+        {
+            QJsonObject obj = document.object(); //获取对象
+//            qDebug() << "object size:"<< obj.size();
+
+            if(obj.contains("ARRAYS"))
+            {
+//                qDebug() << "ARRAYS";
+                QJsonArray arr = obj["ARRAYS"].toArray();
+                for(int i=0;i<arr.count();i++)
+                {
+                    QJsonObject arrojb =arr[i].toObject();
+                    Manger m(arrojb["ACCOUNT"].toString(),arrojb["PASSWORD"].toString(),arrojb["NAME"].toString(),arrojb["TEL"].toString(),arrojb["SEX"].toString());
+                    manger.push_back(m);
+                }
+            }
+        }
+    }
+
+    return manger;
+}
+
+QList<Tennant> SimpleTcpSocketClient::receive_Tennant_info(QString search)//
+{
+    QJsonObject json;
+    json.insert("SEARCH",search);
+
+    QJsonDocument document_;
+    document_.setObject(json);
+    QByteArray byteArray = document_.toJson(QJsonDocument::Compact);
+
+    sendHeader(4,byteArray.size());
+    m_pTcpSocket->write(byteArray); //将筛选条件发送
+
+    QList<Tennant> tennant;
+
+    //接收服务器的回应
+    ReceiveHeader();
+    m_pTcpSocket->waitForReadyRead();
+
+    QByteArray message = m_pTcpSocket->read(m_len);
+
+    //解析json 格式
+
+    QJsonParseError jsonError;
+    QJsonDocument document = QJsonDocument::fromJson(message, &jsonError);//转化为json 文档
+    if(!document.isNull() && (jsonError.error == QJsonParseError::NoError))//解析未发生错误
+    {
+        if(document.isObject()) //json 文档为对象
+        {
+            QJsonObject obj = document.object(); //获取对象
+//            qDebug() << "object size:"<< obj.size();
+
+            if(obj.contains("ARRAYS"))
+            {
+//                qDebug() << "ARRAYS";
+                QJsonArray arr = obj["ARRAYS"].toArray();
+                for(int i=0;i<arr.count();i++)
+                {
+                    QJsonObject arrojb =arr[i].toObject();
+                    Tennant t(arrojb["NAME"].toString(),arrojb["Real_estate"].toString(),arrojb["House_id"].toString(),arrojb["TEL"].toString(),arrojb["END"].toString(),arrojb["CYCLE"].toString(),arrojb["Month_rent"].toInt(),arrojb["BEGIN"].toString(),arrojb["Payment_time"].toInt(),"");
+                    tennant.push_back(t);
+                }
+            }
+        }
+    }
+    return tennant;
+}
+
+QList<Owner> SimpleTcpSocketClient::receive_Owner_info()
+{
+    sendHeader(5,0);
+
+    QList<Owner> owner;
+
+    //接收服务器回应
+    ReceiveHeader();
+
+    m_pTcpSocket->waitForReadyRead();
+
     QByteArray message = m_pTcpSocket->read(m_len);
     qDebug() << QString(message);
-    //解析json格式
+
+    //解析json 格式
+
     QJsonParseError jsonError;
     QJsonDocument document = QJsonDocument::fromJson(message, &jsonError);//转化为json 文档
     if(!document.isNull() && (jsonError.error == QJsonParseError::NoError))//解析未发生错误
@@ -179,15 +304,86 @@ QList<Manger > SimpleTcpSocketClient::receive_Manger_info()
                 qDebug() << "ARRAYS";
                 QJsonArray arr = obj["ARRAYS"].toArray();
                 for(int i=0;i<arr.count();i++)
-                {   qDebug() <<"count:"<<i;
+                {
                     QJsonObject arrojb =arr[i].toObject();
-                    qDebug() << "ACCOUNT:"<<arrojb["ACCOUNT"].toString()<<"PASSWORD"<<arrojb["PASSWORD"].toString()<<"NAME"<<arrojb["NAME"].toString()<<"TEL"<<arrojb["TEL"].toString();
-                    Manger m(arrojb["ACCOUNT"].toString(),arrojb["PASSWORD"].toString(),arrojb["NAME"].toString(),arrojb["TEL"].toString());
-                    manger.push_back(m);
+                    Owner o(arrojb["NAME"].toString(),arrojb["Payment_account"].toString(),arrojb["TEL"].toString(),arrojb["Real_estate"].toString(),arrojb["BEGIN"].toString(),arrojb["END"].toString(),arrojb["DEPOSIT"].toInt(),arrojb["CYCLE"].toString(),arrojb["Month_rent"].toInt(),arrojb["NOTE"].toString());
+                    owner.push_back(o);
                 }
             }
         }
     }
+    return owner;
+}
 
-    return manger;
+QList<Real_estate> SimpleTcpSocketClient::receive_Real_estate_info()
+{
+    sendHeader(6,0);
+
+    QList<Real_estate> real_estate;
+
+    //接收服务器回应
+    ReceiveHeader();
+
+    m_pTcpSocket->waitForReadyRead();
+
+    QByteArray message = m_pTcpSocket->read(m_len);
+    qDebug() << QString(message);
+
+    //解析json 格式
+
+    QJsonParseError jsonError;
+    QJsonDocument document = QJsonDocument::fromJson(message, &jsonError);//转化为json 文档
+    if(!document.isNull() && (jsonError.error == QJsonParseError::NoError))//解析未发生错误
+    {
+        if(document.isObject()) //json 文档为对象
+        {
+            QJsonObject obj = document.object(); //获取对象
+            qDebug() << "object size:"<< obj.size();
+
+            if(obj.contains("ARRAYS"))
+            {
+                qDebug() << "ARRAYS";
+                QJsonArray arr = obj["ARRAYS"].toArray();
+                for(int i=0;i<arr.count();i++)
+                {
+                    QJsonObject arrojb =arr[i].toObject();
+                    Real_estate r(arrojb["Real_estate_id"].toInt(),arrojb["NAME"].toString(),arrojb["ADDRESS"].toString(),arrojb["TYPE"].toString());
+                    real_estate.push_back(r);
+                }
+            }
+        }
+    }
+    return real_estate;
+}
+
+bool SimpleTcpSocketClient::add_tennants(QString Real_estate, QString House_id, QString name, QString tel, QString ID_number, QString begin, QString end,QString cycle,int month_rent, int deposit)
+{//添加租客
+    QJsonObject json;
+    json.insert("Real_estate",Real_estate);
+    json.insert("House_id",House_id);
+    json.insert("NAME",name);
+    json.insert("TEL",tel);
+    json.insert("ID_number",ID_number);
+    json.insert("BEGIN",begin);
+    json.insert("END",end);
+    json.insert("Month_rent",month_rent);
+    json.insert("DEPOSIT",deposit);
+    json.insert("CYCLE",cycle);
+    QJsonDocument document_;
+    document_.setObject(json);
+    QByteArray byteArray = document_.toJson(QJsonDocument::Compact);
+
+    sendHeader(3,byteArray.size());
+    m_pTcpSocket->write(byteArray);
+
+    ReceiveHeader();
+    m_pTcpSocket->waitForReadyRead();
+
+    QByteArray message = m_pTcpSocket->read(m_len);
+    QString state = QString(message);
+    if(state == "success")
+    {
+        return true;
+    }
+    return false;
 }

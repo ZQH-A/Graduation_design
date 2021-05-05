@@ -61,9 +61,8 @@ void ConnectionPool::closeConnection(QSqlDatabase connection)
 {
     ConnectionPool& pool = ConnectionPool::getInstance();
     QString connectionName = connection.connectionName();
-
     //如果是我们创建的连接，从used 里删除，放入 unused里
-    if(pool.unusedConnectionNames.contains(connectionName))
+    if(pool.usedConnectionNames.contains(connectionName))
     {
         QMutexLocker locker(&mutex);
         pool.usedConnectionNames.removeOne(connectionName);

@@ -6,7 +6,7 @@ import QtQml.Models 2.2
 
 Rectangle{
     visible: true
-    width:240
+    width:200
     height:800
 
     signal mclicked(int index); //自定义信号
@@ -15,8 +15,7 @@ Rectangle{
         id:root
         height:parent.height
         width:parent.width
-        color: "#262d3a"
-//        color:"white"
+        color: "#32323a"
 
         property var treeModel: mControl.getTreeModel()
 
@@ -49,7 +48,7 @@ Rectangle{
                     height: 20
                     width: 20
                     anchors.left: parent.left
-                    anchors.leftMargin: 5
+//                    anchors.leftMargin: 5
                     anchors.verticalCenter: parent.verticalCenter
                     source:{
                         if(styleData.value ==="首页")
@@ -101,20 +100,21 @@ Rectangle{
                         if(styleData.depth)
                         {
                             if(styleData.value === "基本管理")
-                            {
-
+                            {                               
                                 mclicked(1);
-
                             }else if(styleData.value === "系统用户管理")
-                            {
-
+                            {                                
                                 mclicked(2);
+                            }else if(styleData.value === "租客档案")
+                            {
+                                mclicked(3);
+                            }else if(styleData.value === "业主管理")
+                            {
+                                mclicked(4);
                             }
                         }else{
                             if(styleData.value === "首页")
-                            {
-                                console.log("click 首页");
-                                console.log("click 首页");
+                            {                                
                                 mclicked(0);
                             }
                             if(isExpand)
@@ -137,13 +137,13 @@ Rectangle{
         TreeViewStyle{
             padding.left: 2
             padding.right: 2
-            indentation: 30 //节点间缩进
-            branchDelegate: Image { //字前面的图片
-                id:image
-                width: 20
-                height: 20
-                source: styleData.isExpanded ? "qrc:images/expansion.png": "qrc:images/collapse.png"
-            }
+            indentation: 10 //节点间缩进
+//            branchDelegate: Image { //字前面的图片
+//                id:image
+//                width: 20
+//                height: 20
+//                source: styleData.isExpanded ? "qrc:images/expansion.png": "qrc:images/collapse.png"
+//            }
             rowDelegate: Rectangle{
                 color:styleData.selected ? "#007DFF" : "transparent" //选中节点后的颜色和背景色
                 height: 40

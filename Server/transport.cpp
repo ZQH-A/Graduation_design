@@ -34,6 +34,21 @@ void Transport::ReceiveHeader()
     }else if(symbol == DISCONNECT)
     {
         m_type = -1;
+    }else if(symbol == RECE_USER_INFO)
+    {
+        m_type =2;
+    }else if(symbol == ADD_TENNANTS)
+    {
+        m_type =3;
+    }else if(symbol == RECE_TENNANT_INFO)
+    {
+        m_type =4;
+    }else if(symbol == RECE_OWNER_INFO)
+    {
+        m_type = 5;
+    }else if(symbol == RECE_REAL_ESTATE_INFO)
+    {
+        m_type =6;
     }
     m_len = length;
     qDebug() << m_type<<"                " <<length;
@@ -60,6 +75,18 @@ void Transport::sendHeader(int type, int length)
     }else if(type ==2)
     {
         header = QString::number(RECE_USER_INFO);
+    }else if(type ==3)
+    { // 回应客户端的 租客添加是否成功
+        header = QString::number(ADD_TENNANTS);
+    }else if(type ==4)
+    { //发送 租客信息
+        header = QString::number(RECE_TENNANT_INFO);
+    }else if(type == 5)
+    { //发送业主信息
+        header = QString::number(RECE_OWNER_INFO);
+    }else if(type == 6)
+    {
+        header = QString::number(RECE_REAL_ESTATE_INFO);
     }
 
     m_header.fill('0',10);
@@ -77,10 +104,7 @@ void Transport::sendHeader(int type, int length)
 void Transport::ReceiveLogin()
 {
     socket->waitForReadyRead();
-//    while(!socket->waitForReadyRead())
-//    {
-//        qDebug()<< "wait data....";
-//    }
+
     QString account,password;
     QByteArray message =socket->read(m_len);
 
@@ -136,10 +160,7 @@ void Transport::ReceiveLogin()
 
 void Transport::ReceiveRegister()
 {
-    while(!socket->waitForReadyRead())
-    {
-        qDebug()<< "wait data....";
-    }
+    socket->waitForReadyRead();
     QString account,password,name,tel;
 
     QByteArray message = socket->read(m_len);
@@ -210,9 +231,107 @@ void Transport::ReceiveRegister()
 
 void Transport::send_manger_info()
 {
-    QByteArray byteArray  = db->DB_manger_info();
+    socket->waitForReadyRead();
+    QString account,name,tel,sex;
+    QByteArray message = socket->read(m_len);
+
+    //进行解析
+    QJsonParseError jsonError;
+    QJsonDocument document = QJsonDocument::fromJson(message,&jsonError); //转化为json 文档
+    if(!document.isNull() && (jsonError.error == QJsonParseError::NoError))// 解析未发生错误
+    {
+        if(document.isObject())
+        {
+            QJsonObject obj = document.object();// 转化为对象
+            if(obj.contains("ACCOUNT"))// 包含指定的 key
+            {
+                QJsonValue value = obj.value("ACCOUNT");
+                if(value.isString())
+                {
+                    account = value.toString();
+                }
+            }
+            if(obj.contains("NAME"))
+            {
+                QJsonValue value = obj.value("NAME");
+                if(value.isString())
+                {
+                    name = value.toString();
+                }
+            }
+            if(obj.contains("TEL"))
+            {
+                QJsonValue value = obj.value("TEL");
+                if(value.isString())
+                {
+                    tel = value.toString();
+                }
+            }
+            if(obj.contains("SEX"))
+            {
+                QJsonValue value = obj.value("SEX");
+                if(value.isString())
+                {
+                    sex = value.toString();
+                }
+            }
+        }
+    }
+
+
+    QByteArray byteArray  = db->DB_manger_info(account,name,tel,sex);
     qDebug() << byteArray.size();
     sendHeader(2,byteArray.size());
+    socket->write(byteArray);
+    socket->flush();
+}
+
+void Transport::send_tennant_info()
+{
+    socket->waitForReadyRead();
+    QString search;
+    QByteArray message = socket->read(m_len);
+
+    //进行解析
+    QJsonParseError jsonError;
+    QJsonDocument document = QJsonDocument::fromJson(message,&jsonError); //转化为json 文档
+    if(!document.isNull() && (jsonError.error == QJsonParseError::NoError))// 解析未发生错误
+    {
+        if(document.isObject())
+        {
+            QJsonObject obj = document.object();// 转化为对象
+            if(obj.contains("SEARCH"))
+            {
+                QJsonValue value = obj.value("SEARCH");
+                if(value.isString())
+                {
+                    search = value.toString();
+                }
+            }
+        }
+    }
+
+    QByteArray byteArray = db->DB_tennant_info(search);
+    qDebug() <<byteArray.size();
+    sendHeader(4,byteArray.size());
+    socket->write(byteArray);
+    socket->flush();
+}
+
+void Transport::send_owner_info()
+{
+    QByteArray byteArray = db->DB_owner_info();
+    qDebug() << byteArray.size();
+    sendHeader(5,byteArray.size());
+    socket->write(byteArray);
+    socket->flush();
+}
+
+void Transport::send_real_estate_info()
+{
+    QByteArray byteArray = db->DB_Real_estate_info();
+    qDebug() << byteArray.size();
+    sendHeader(6,byteArray.size());
     socket->write(byteArray);
     socket->flush();
 }
@@ -220,6 +339,126 @@ void Transport::send_manger_info()
 int Transport::Type()
 {
     return m_type;
+}
+
+void Transport::add_tennants()
+{
+    socket->waitForReadyRead();
+    QString Real_estate, House_id, name, tel,ID_number,begin,end,cycle;
+    int month_rent,deposit;
+
+    QByteArray message = socket->read(m_len);
+    qDebug()<< QString(message);
+
+    //进行解析
+    QJsonParseError jsonError;
+    QJsonDocument document = QJsonDocument::fromJson(message,&jsonError); //转化为json 文档
+    if(!document.isNull() && (jsonError.error == QJsonParseError::NoError))// 解析未发生错误
+    {
+        if(document.isObject())
+        {
+            QJsonObject obj = document.object();// 转化为对象
+            if(obj.contains("Real_estate"))// 包含指定的 key
+            {
+                QJsonValue value = obj.value("Real_estate");
+                if(value.isString())
+                {
+                    Real_estate = value.toString();
+                }
+            }
+            if(obj.contains("House_id"))
+            {
+                QJsonValue value = obj.value("House_id");
+                if(value.isString())
+                {
+                    House_id = value.toString();
+                }
+            }
+            if(obj.contains("NAME"))
+            {
+                QJsonValue value = obj.value("NAME");
+                if(value.isString())
+                {
+                    name = value.toString();
+                }
+            }
+            if(obj.contains("TEL"))
+            {
+                QJsonValue value = obj.value("TEL");
+                if(value.isString())
+                {
+                    tel = value.toString();
+                }
+            }
+            if(obj.contains("ID_number"))
+            {
+                QJsonValue value = obj.value("ID_number");
+                if(value.isString())
+                {
+                    ID_number = value.toString();
+                }
+            }
+            if(obj.contains("BEGIN"))
+            {
+                QJsonValue value = obj.value("BEGIN");
+                if(value.isString())
+                {
+                    begin = value.toString();
+                }
+            }
+            if(obj.contains("END"))
+            {
+                QJsonValue value = obj.value("END");
+                if(value.isString())
+                {
+                    end = value.toString();
+                }
+            }
+            if(obj.contains("Month_rent"))
+            {
+                QJsonValue value = obj.value("Month_rent");
+                if(value.isDouble())
+                {
+                    month_rent = value.toInt();
+                }
+            }
+            if(obj.contains("DEPOSIT"))
+            {
+                QJsonValue value = obj.value("DEPOSIT");
+                if(value.isDouble())
+                {
+                    deposit = value.toInt();
+                }
+            }
+            if(obj.contains("CYCLE"))
+            {
+                QJsonValue value = obj.value("CYCLE");
+                if(value.isString())
+                {
+                    cycle = value.toString();
+                }
+            }
+        }
+    }
+
+    //判断是否插入成功
+    QString state;
+    QByteArray add_state;
+    if(db->DB_add_tennants(Real_estate,House_id,name,tel,ID_number,begin,end,cycle,month_rent,deposit))
+    {
+        state = "success";
+        add_state = state.toUtf8();
+        qDebug() << "success"<< add_state.size();
+        sendHeader(3,add_state.size());
+        socket->write(add_state);
+    }else
+    {
+        state = "fail";
+        add_state = state.toUtf8();
+        qDebug() << "fail" << add_state.size();
+        sendHeader(3,add_state.size());
+        socket->write(add_state);
+    }
 }
 
 Transport::~Transport()
